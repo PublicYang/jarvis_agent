@@ -1,0 +1,51 @@
+[project]
+name = "jarvis-agent"
+version = "0.1.0"
+description = "A Python Agent Runtime built from scratch for learning production-grade Agent evolution"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "TBD" }
+authors = [{ name = "Jarvis Team" }]
+keywords = ["agent", "runtime", "llm", "python"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.12",
+]
+
+# Phase 0: 无业务依赖，Sprint1 起逐步添加
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.4",
+    "black>=24.0",
+]
+
+[project.scripts]
+# Sprint1: jarvis = "jarvis.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = []
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+src = ["runtime", "planner", "tools", "llm", "memory", "workflow", "mcp", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.black]
+target-version = ["py312"]
+line-length = 88
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-v"
