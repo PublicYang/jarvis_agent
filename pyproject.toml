@@ -23,7 +23,7 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24",
-    "ruff>=0.4",
+    "ruff==0.16.5",
     "black>=24.0",
     "pre-commit>=3.0",
 ]

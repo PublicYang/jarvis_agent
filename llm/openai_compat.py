@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 import httpx
+from runtime.models import Message
 
 from llm.adapter import LLMRequest, LLMResponse
-from runtime.models import Message
 
 
 class OpenAICompatAdapter:

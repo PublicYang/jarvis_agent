@@ -6,7 +6,6 @@ import json
 
 import httpx
 import pytest
-
 from llm.openai_compat import OpenAICompatAdapter
 from runtime.models import Message, MessageRole
 
