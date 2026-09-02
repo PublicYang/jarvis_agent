@@ -31,7 +31,7 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | 仅 `docs/`、`README.md`、`.gitignore`、`pyproject.toml` |
 | **Quality Gate** | Master Plan Checklist 全部 ✅；文档交叉引用完整 |
 
-**状态**：🔄 进行中
+**状态**：✅ 完成
 
 ---
 
@@ -242,7 +242,7 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 
 | 版本 | Phase | 状态 |
 |------|-------|------|
-| V0 | Phase0 Design Gate | 🔄 进行中 |
+| V0 | Phase0 Design Gate | ✅ 完成 |
 | V0 | Phase1–3 | ⏳ 待开始 |
 | V1 | Phase4–7 | ⏳ 待开始 |
 | V2 | Phase8–10 | ⏳ 待开始 |

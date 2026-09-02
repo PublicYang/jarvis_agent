@@ -24,7 +24,7 @@ Client → Jarvis Agent → Runtime → Tools → LLM
 
 | 版本 | Phase | 状态 |
 |------|-------|------|
-| **V0** | Phase0 Design Gate | 🔄 进行中 |
+| **V0** | Phase0 Design Gate | ✅ 完成 |
 
 下一 Phase：**Phase1 Project Skeleton**（建立空包结构，不写业务逻辑）
 

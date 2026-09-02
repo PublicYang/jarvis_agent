@@ -103,7 +103,8 @@ Integration 不属于 Jarvis 核心，详见 [Project Structure — integrations
 
 | 版本 | Phase | 状态 |
 |------|-------|------|
-| V0 | Phase0 Design Gate | 🔄 进行中 |
+| V0 | Phase0 Design Gate | ✅ 完成 |
+| V0 | Phase1 Project Skeleton | 🔄 进行中 |
 
 详见 [Roadmap](./07-roadmap.md)。
 
