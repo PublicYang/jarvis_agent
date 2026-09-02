@@ -47,6 +47,8 @@ class LLMAdapter(Protocol):
 
 ## Planner
 
+> **实现**：`planner/base.py`（Phase5）
+
 ```python
 # planner/base.py
 

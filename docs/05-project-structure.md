@@ -175,6 +175,14 @@ tests/
 | llm/openai_compat.py | OpenAI 兼容实现（httpx） |
 | tests/llm/test_openai_compat.py | mock HTTP 测试 |
 
+## Phase5 已创建
+
+| 路径 | 说明 |
+|------|------|
+| planner/base.py | `Planner` Protocol、`PlannerOutput`、`DecisionType` |
+| planner/simple.py | `SimplePlanner`（LLM 驱动 reply/clarify） |
+| tests/planner/test_simple.py | Planner 单元测试 |
+
 ## Phase0 禁止创建
 
 - runtime/、planner/、tools/、llm/、memory/、workflow/ **业务代码**（`__init__.py` 除外）

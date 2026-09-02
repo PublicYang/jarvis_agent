@@ -108,6 +108,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `planner/base.py`、`planner/simple.py`；Planner 单元测试 |
 | **Quality Gate** | Planner 输出 Pydantic 校验；状态图 Planning 状态可测 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase6 — Tool Calling
@@ -255,8 +257,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V0 | Phase2 Dev Infrastructure | ✅ 完成 |
 | V0 | Phase3 Runtime Foundation | ✅ 完成 |
 | V1 | Phase4 LLM Adapter | ✅ 完成 |
-| V1 | Phase5 Planner | 🔄 下一 Phase |
-| V1 | Phase6–7 | ⏳ 待开始 |
+| V1 | Phase5 Planner | ✅ 完成 |
+| V1 | Phase6 Tool Calling | 🔄 下一 Phase |
+| V1 | Phase7 Runtime Loop | ⏳ 待开始 |
 | V2 | Phase8–10 | ⏳ 待开始 |
 | V3 | Phase11–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |
