@@ -13,14 +13,16 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-# Phase 3: Runtime domain models
+# Phase 3: Runtime domain models; Phase 4: LLM adapter
 dependencies = [
     "pydantic>=2.0",
+    "httpx>=0.27",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
+    "pytest-asyncio>=0.24",
     "ruff>=0.4",
     "black>=24.0",
     "pre-commit>=3.0",
@@ -60,3 +62,4 @@ line-length = 88
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-v"
+asyncio_mode = "auto"

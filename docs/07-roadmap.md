@@ -93,6 +93,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `llm/adapter.py`、`llm/openai_compat.py`；httpx 依赖 |
 | **Quality Gate** | Adapter 接口测试（mock HTTP）；[Interface Spec — LLM](./09-interface-spec.md) 一致 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase5 — Planner
@@ -252,8 +254,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V0 | Phase1 Project Skeleton | ✅ 完成 |
 | V0 | Phase2 Dev Infrastructure | ✅ 完成 |
 | V0 | Phase3 Runtime Foundation | ✅ 完成 |
-| V1 | Phase4 LLM Adapter | 🔄 下一 Phase |
-| V1 | Phase5–7 | ⏳ 待开始 |
+| V1 | Phase4 LLM Adapter | ✅ 完成 |
+| V1 | Phase5 Planner | 🔄 下一 Phase |
+| V1 | Phase6–7 | ⏳ 待开始 |
 | V2 | Phase8–10 | ⏳ 待开始 |
 | V3 | Phase11–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |

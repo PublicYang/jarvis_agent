@@ -167,6 +167,14 @@ tests/
 | runtime/models.py | Message、State、Task Pydantic 模型 |
 | tests/runtime/test_models.py | 模型单元测试 |
 
+## Phase4 已创建
+
+| 路径 | 说明 |
+|------|------|
+| llm/adapter.py | `LLMAdapter` Protocol、`LLMRequest`/`LLMResponse` |
+| llm/openai_compat.py | OpenAI 兼容实现（httpx） |
+| tests/llm/test_openai_compat.py | mock HTTP 测试 |
+
 ## Phase0 禁止创建
 
 - runtime/、planner/、tools/、llm/、memory/、workflow/ **业务代码**（`__init__.py` 除外）

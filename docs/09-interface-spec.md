@@ -15,6 +15,8 @@
 
 ## LLM Adapter
 
+> **实现**：`llm/adapter.py`（Phase4）
+
 ```python
 # llm/adapter.py
 
