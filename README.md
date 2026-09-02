@@ -25,8 +25,10 @@ Client → Jarvis Agent → Runtime → Tools → LLM
 | 版本 | Phase | 状态 |
 |------|-------|------|
 | **V0** | Phase0 Design Gate | ✅ 完成 |
+| **V0** | Phase1 Project Skeleton | ✅ 完成 |
+| **V0** | Phase2 Dev Infrastructure | 🔄 进行中 |
 
-下一 Phase：**Phase1 Project Skeleton**（建立空包结构，不写业务逻辑）
+下一交付：**Phase2** 开发工具链（pytest、Ruff、Black、pre-commit）
 
 ---
 

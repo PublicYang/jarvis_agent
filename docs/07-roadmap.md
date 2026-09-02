@@ -46,6 +46,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `runtime/__init__.py` 等空包；`integrations/cli/__init__.py`；pyproject 更新 |
 | **Quality Gate** | `uv sync` 成功；目录与 [Project Structure](./05-project-structure.md) 一致 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase2 — Development Infrastructure
@@ -58,6 +60,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Architecture Changes** | Infrastructure 层工具链 |
 | **Expected Git Diff** | `.pre-commit-config.yaml`；`pyproject.toml` dev 依赖；示例空测试 |
 | **Quality Gate** | `pytest`、`ruff`、`black --check` 全绿；pre-commit 可运行 |
+
+**状态**：🔄 进行中
 
 ---
 
@@ -243,7 +247,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | 版本 | Phase | 状态 |
 |------|-------|------|
 | V0 | Phase0 Design Gate | ✅ 完成 |
-| V0 | Phase1–3 | ⏳ 待开始 |
+| V0 | Phase1 Project Skeleton | ✅ 完成 |
+| V0 | Phase2 Dev Infrastructure | 🔄 进行中 |
+| V0 | Phase3 Runtime Foundation | ⏳ 待开始 |
 | V1 | Phase4–7 | ⏳ 待开始 |
 | V2 | Phase8–10 | ⏳ 待开始 |
 | V3 | Phase11–13 | ⏳ 待开始 |
