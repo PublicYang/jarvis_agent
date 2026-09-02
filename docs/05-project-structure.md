@@ -160,6 +160,13 @@ tests/
 | tests/test_placeholder.py | 占位测试，验证工具链 |
 | .pre-commit-config.yaml | ruff + black + pytest hooks |
 
+## Phase3 已创建
+
+| 路径 | 说明 |
+|------|------|
+| runtime/models.py | Message、State、Task Pydantic 模型 |
+| tests/runtime/test_models.py | 模型单元测试 |
+
 ## Phase0 禁止创建
 
 - runtime/、planner/、tools/、llm/、memory/、workflow/ **业务代码**（`__init__.py` 除外）

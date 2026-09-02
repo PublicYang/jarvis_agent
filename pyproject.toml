@@ -13,8 +13,10 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-# Phase 1: 无业务依赖
-dependencies = []
+# Phase 3: Runtime domain models
+dependencies = [
+    "pydantic>=2.0",
+]
 
 [project.optional-dependencies]
 dev = [

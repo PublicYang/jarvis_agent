@@ -245,11 +245,18 @@ erDiagram
 
 ## 实现映射
 
-| 对象 | 目录 | Phase |
-|------|------|-------|
-| Message, State, Task | runtime/ | Phase3 |
-| PlannerOutput | planner/ | Phase5 |
-| ToolCall, Observation | tools/ | Phase6 |
-| MemoryRecord | memory/ | Phase8 |
+| 对象 | 目录 | Phase | 实现文件 |
+|------|------|-------|----------|
+| Message, State, Task | runtime/ | Phase3 | `runtime/models.py` |
+| PlannerOutput | planner/ | Phase5 | — |
+| ToolCall, Observation | tools/ | Phase6 | — |
+| MemoryRecord | memory/ | Phase8 | — |
+
+### Phase3 实现说明
+
+- `Message`：`frozen=True`，创建后不可变
+- `StateStatus`：`created` / `running` / `waiting_tool` / `completed` / `failed` / `cancelled`
+- `TaskStatus`：`pending` / `in_progress` / `completed` / `failed`
+- `State.tool_calls` / `observations` / `planner_outputs`：Phase3 暂用 `list[Any]`，Phase5/6 替换为强类型
 
 见 [Project Structure](./05-project-structure.md)。

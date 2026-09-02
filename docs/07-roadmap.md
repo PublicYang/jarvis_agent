@@ -61,7 +61,7 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `.pre-commit-config.yaml`；`pyproject.toml` dev 依赖；示例空测试 |
 | **Quality Gate** | `pytest`、`ruff`、`black --check` 全绿；pre-commit 可运行 |
 
-**状态**：🔄 进行中
+**状态**：✅ 完成
 
 ---
 
@@ -75,6 +75,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Architecture Changes** | Runtime 层首次有代码；State 状态 enum |
 | **Expected Git Diff** | `runtime/models.py`；`tests/runtime/test_models.py`；Domain Model 同步 |
 | **Quality Gate** | 模型测试通过；不调用 LLM；文档 [Domain Model](./03-domain-model.md) 同步 |
+
+**状态**：✅ 完成
 
 ---
 
@@ -248,9 +250,10 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 |------|-------|------|
 | V0 | Phase0 Design Gate | ✅ 完成 |
 | V0 | Phase1 Project Skeleton | ✅ 完成 |
-| V0 | Phase2 Dev Infrastructure | 🔄 进行中 |
-| V0 | Phase3 Runtime Foundation | ⏳ 待开始 |
-| V1 | Phase4–7 | ⏳ 待开始 |
+| V0 | Phase2 Dev Infrastructure | ✅ 完成 |
+| V0 | Phase3 Runtime Foundation | ✅ 完成 |
+| V1 | Phase4 LLM Adapter | 🔄 下一 Phase |
+| V1 | Phase5–7 | ⏳ 待开始 |
 | V2 | Phase8–10 | ⏳ 待开始 |
 | V3 | Phase11–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |
