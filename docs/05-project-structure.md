@@ -139,13 +139,38 @@ tests/
 | .gitignore | Git 忽略 |
 | pyproject.toml | 基础配置 |
 
+## Phase1 已创建
+
+| 路径 | 说明 |
+|------|------|
+| runtime/ | 空包（Phase3 起加 models） |
+| planner/ | 空包（Phase5 起加接口） |
+| tools/ | 空包（Phase6 起加 Tool） |
+| llm/ | 空包（Phase4 起加 Adapter） |
+| memory/ | 空包（Phase8 起加 Store） |
+| workflow/ | 空包（Phase11 起加 Node/Edge） |
+| integrations/ | 接入层空包 |
+| integrations/cli/ | CLI 占位（Phase7 实现） |
+
+## Phase2 已创建
+
+| 路径 | 说明 |
+|------|------|
+| tests/conftest.py | pytest 共享 fixture |
+| tests/test_placeholder.py | 占位测试，验证工具链 |
+| .pre-commit-config.yaml | ruff + black + pytest hooks |
+
 ## Phase0 禁止创建
 
-- runtime/、planner/、tools/、llm/、memory/、workflow/ 业务代码
-- integrations/ 实现代码（Phase1 起）
+- runtime/、planner/、tools/、llm/、memory/、workflow/ **业务代码**（`__init__.py` 除外）
+- integrations/ **实现代码**（`__init__.py` 占位除外）
 
 ---
 
 ## 包命名
 
-顶层包名：`jarvis`（Phase1 确定并在 pyproject.toml 配置）。
+| 项 | 值 |
+|----|-----|
+| **发行名** | `jarvis-agent`（pyproject `[project].name`） |
+| **导入包** | 扁平布局：`runtime`、`planner`、`tools`、`llm`、`memory`、`workflow`、`integrations` |
+| **CLI 入口** | `integrations.cli`（Phase7 启用 `[project.scripts]`） |
