@@ -41,7 +41,7 @@
 | Phase2 | pytest, ruff, black, pre-commit |
 | Phase3 | pydantic |
 | Phase4 | httpx |
-| Phase1/4 | typer |
+| Phase1/7 | typer |
 | Phase10 | sqlite3（标准库） |
 
 ---

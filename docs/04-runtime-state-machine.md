@@ -167,3 +167,10 @@ WaitingApproval ──(Timeout)──→ Cancelled
 | Retry, Timeout, Cancel, Approval | Phase7 |
 | Interrupt, Resume | Phase12 |
 | Parallel Tool | Phase13 |
+
+### Phase7 实现说明
+
+- `runtime/state_machine.py`：`RuntimePhase` + `transition()` + `to_state_status()`
+- `runtime/engine.py`：按状态机驱动；Retry / Timeout / Cancel / Approval 可测
+- WaitingApproval 映射到 `State.status=running`（与上文对照表一致）
+- Phase12 将完善 Workflow Interrupt/Resume

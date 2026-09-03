@@ -138,6 +138,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `runtime/engine.py`、`runtime/state_machine.py`；CLI 命令 |
 | **Quality Gate** | [Runtime State Machine](./04-runtime-state-machine.md) 与实现同步；CLI 单次对话可用 |
 
+**状态**：✅ 完成
+
 ---
 
 # V2 Stateful Agent
@@ -261,8 +263,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V1 | Phase4 LLM Adapter | ✅ 完成 |
 | V1 | Phase5 Planner | ✅ 完成 |
 | V1 | Phase6 Tool Calling | ✅ 完成 |
-| V1 | Phase7 Runtime Loop | 🔄 下一 Phase |
-| V2 | Phase8–10 | ⏳ 待开始 |
+| V1 | Phase7 Runtime Loop | ✅ 完成 |
+| V2 | Phase8 Memory Foundation | 🔄 下一 Phase |
+| V2 | Phase9–10 | ⏳ 待开始 |
 | V3 | Phase11–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |
 

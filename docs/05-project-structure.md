@@ -197,10 +197,20 @@ tests/
 | tests/tools/test_registry.py | Registry / Executor 单元测试 |
 | tests/runtime/test_loop.py | 闭环集成测试 |
 
+## Phase7 已创建
+
+| 路径 | 说明 |
+|------|------|
+| runtime/state_machine.py | `RuntimePhase` 与合法转移 |
+| runtime/engine.py | `RuntimeEngine`（Retry/Timeout/Cancel/Approval） |
+| integrations/cli/app.py | Typer CLI 组合根：`jarvis chat` |
+| tests/runtime/test_state_machine.py | 状态机单元测试 |
+| tests/runtime/test_engine.py | Engine 边界条件测试 |
+| tests/integrations/test_cli.py | CLI 单次对话测试 |
+
 ## Phase0 禁止创建
 
-- runtime/、planner/、tools/、llm/、memory/、workflow/ **业务代码**（`__init__.py` 除外）
-- integrations/ **实现代码**（`__init__.py` 占位除外）
+- 跨 Phase 提前实现业务能力（历史约束；Phase1+ 已按 Roadmap 落地）
 
 ---
 
@@ -210,4 +220,4 @@ tests/
 |----|-----|
 | **发行名** | `jarvis-agent`（pyproject `[project].name`） |
 | **导入包** | 扁平布局：`runtime`、`planner`、`tools`、`llm`、`memory`、`workflow`、`integrations` |
-| **CLI 入口** | `integrations.cli`（Phase7 启用 `[project.scripts]`） |
+| **CLI 入口** | `jarvis = "integrations.cli:app"` → `jarvis chat` |

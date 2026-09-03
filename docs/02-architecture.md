@@ -139,6 +139,7 @@ Runtime 进入 `Completed`，Application 层封装 Answer 返回 Client。
 | Phase4 | 引入 LLM Adapter 层 |
 | Phase5 | 引入 Planning 层 |
 | Phase6 | 引入 Execution + Tools 层；`runtime/loop.py` 最小闭环 |
+| Phase7 | Runtime 完整状态机 + `RuntimeEngine`；CLI 组合根 |
 | Phase8–10 | Memory 扩展 State；Infrastructure 持久化 |
 | Phase11–13 | Workflow 编排层（Node/Edge） |
 | Phase14 | MCP 与 Tools 层整合 |

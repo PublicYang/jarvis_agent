@@ -161,8 +161,8 @@ class ContextBuilder(Protocol):
 ```python
 # runtime/engine.py
 
-class RuntimeEngine(Protocol):
-    """Phase7 引入完整 Loop。"""
+class RuntimeEngine:
+    """Phase7 完整 Loop：Retry / Timeout / Cancel / Approval。"""
 
     def run(self, user_message: Message) -> State:
         """执行一次完整 Agent Run，返回终态 State。"""
@@ -172,6 +172,8 @@ class RuntimeEngine(Protocol):
         """取消运行中的 State。"""
         ...
 ```
+
+组合根见 `integrations/cli/app.py`（`build_engine` + `jarvis chat`）。
 
 ---
 

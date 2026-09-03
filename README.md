@@ -31,8 +31,9 @@ Client → Jarvis Agent → Runtime → Tools → LLM
 | **V1** | Phase4 LLM Adapter | ✅ 完成 |
 | **V1** | Phase5 Planner | ✅ 完成 |
 | **V1** | Phase6 Tool Calling | ✅ 完成 |
+| **V1** | Phase7 Runtime Loop | ✅ 完成 |
 
-下一 Phase：**Phase7 Runtime Loop**（`RuntimeEngine`、状态机、CLI `chat`）
+**V1 Core Runtime 已完成。** 下一 Phase：**Phase8 Memory Foundation**
 
 ---
 
@@ -101,18 +102,17 @@ BAG **不是** Jarvis 的父项目。
 
 ## 快速开始
 
-Phase0 仅含文档与骨架，无可运行 Agent 代码。
-
 ```bash
 cd jarvis_agent
-ls docs/          # 阅读 Master Plan
-```
-
-Phase2 起：
-
-```bash
 uv sync --extra dev
 uv run pytest
+
+# 离线单次对话（无需 API Key）
+uv run jarvis chat --demo "hello"
+uv run jarvis chat --demo "echo jarvis"
+
+# 真实 LLM（需 API Key）
+uv run jarvis chat --api-key "$JARVIS_API_KEY" "你好"
 ```
 
 ---
