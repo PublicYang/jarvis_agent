@@ -13,10 +13,11 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-# Phase 3: Runtime domain models; Phase 4: LLM adapter
+# Phase 3–7: Runtime models, LLM adapter, CLI
 dependencies = [
     "pydantic>=2.0",
     "httpx>=0.27",
+    "typer>=0.12",
 ]
 
 [project.optional-dependencies]
@@ -29,7 +30,7 @@ dev = [
 ]
 
 [project.scripts]
-# Phase7: jarvis = "integrations.cli:app"
+jarvis = "integrations.cli:app"
 
 [build-system]
 requires = ["hatchling"]
