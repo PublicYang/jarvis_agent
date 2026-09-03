@@ -51,6 +51,7 @@ jarvis_agent/
 runtime/
 ├── __init__.py
 ├── models.py          # Message, State, Task (Phase3)
+├── loop.py            # 最小闭环 (Phase6)
 ├── engine.py          # 主循环 (Phase7)
 └── state_machine.py   # 状态机 (Phase7)
 ```
@@ -69,9 +70,10 @@ planner/
 ```text
 tools/
 ├── __init__.py
-├── base.py            # Tool 接口 (Phase6)
+├── base.py            # Tool 接口、ToolCall、Observation (Phase6)
 ├── registry.py        # 注册表 (Phase6)
-└── executor.py        # 执行器 (Phase6)
+├── executor.py        # 执行器 (Phase6)
+└── echo.py            # 示例 Tool (Phase6)
 ```
 
 ### llm/
@@ -182,6 +184,18 @@ tests/
 | planner/base.py | `Planner` Protocol、`PlannerOutput`、`DecisionType` |
 | planner/simple.py | `SimplePlanner`（LLM 驱动 reply/clarify） |
 | tests/planner/test_simple.py | Planner 单元测试 |
+
+## Phase6 已创建
+
+| 路径 | 说明 |
+|------|------|
+| tools/base.py | `Tool` Protocol、`ToolCall`、`Observation` |
+| tools/registry.py | `InMemoryToolRegistry` |
+| tools/executor.py | `ToolExecutor`（pending → running → completed/failed） |
+| tools/echo.py | 示例 `EchoTool` |
+| runtime/loop.py | 最小闭环：Planning → Tool → Planning → Reply |
+| tests/tools/test_registry.py | Registry / Executor 单元测试 |
+| tests/runtime/test_loop.py | 闭环集成测试 |
 
 ## Phase0 禁止创建
 

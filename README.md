@@ -30,8 +30,9 @@ Client → Jarvis Agent → Runtime → Tools → LLM
 | **V0** | Phase3 Runtime Foundation | ✅ 完成 |
 | **V1** | Phase4 LLM Adapter | ✅ 完成 |
 | **V1** | Phase5 Planner | ✅ 完成 |
+| **V1** | Phase6 Tool Calling | ✅ 完成 |
 
-下一 Phase：**Phase6 Tool Calling**（Tool、ToolRegistry、Agent 闭环）
+下一 Phase：**Phase7 Runtime Loop**（`RuntimeEngine`、状态机、CLI `chat`）
 
 ---
 

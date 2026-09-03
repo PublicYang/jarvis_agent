@@ -123,6 +123,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `tools/` 模块；Runtime 最小 Loop（Planning→Tool→Planning→Reply） |
 | **Quality Gate** | ToolCall 可追踪；闭环集成测试；[Architecture 数据流](./02-architecture.md) 可验证 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase7 — Runtime Loop
@@ -258,8 +260,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V0 | Phase3 Runtime Foundation | ✅ 完成 |
 | V1 | Phase4 LLM Adapter | ✅ 完成 |
 | V1 | Phase5 Planner | ✅ 完成 |
-| V1 | Phase6 Tool Calling | 🔄 下一 Phase |
-| V1 | Phase7 Runtime Loop | ⏳ 待开始 |
+| V1 | Phase6 Tool Calling | ✅ 完成 |
+| V1 | Phase7 Runtime Loop | 🔄 下一 Phase |
 | V2 | Phase8–10 | ⏳ 待开始 |
 | V3 | Phase11–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |

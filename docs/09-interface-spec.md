@@ -67,6 +67,8 @@ class Planner(Protocol):
 
 ## Tool
 
+> **实现**：`tools/base.py`（Phase6）
+
 ```python
 # tools/base.py
 
@@ -95,6 +97,8 @@ class Tool(Protocol):
 ---
 
 ## Tool Registry
+
+> **实现**：`tools/registry.py`（Phase6）
 
 ```python
 # tools/registry.py
@@ -151,6 +155,8 @@ class ContextBuilder(Protocol):
 ---
 
 ## Runtime Engine
+
+> **实现**：Phase6 `runtime/loop.py`（最小闭环）；Phase7 `runtime/engine.py`（完整 Loop）
 
 ```python
 # runtime/engine.py

@@ -109,6 +109,7 @@ Integration 不属于 Jarvis 核心，详见 [Project Structure — integrations
 | V0 | Phase3 Runtime Foundation | ✅ 完成 |
 | V1 | Phase4 LLM Adapter | ✅ 完成 |
 | V1 | Phase5 Planner | ✅ 完成 |
+| V1 | Phase6 Tool Calling | ✅ 完成 |
 
 详见 [Roadmap](./07-roadmap.md)。
 

@@ -121,7 +121,9 @@ State 聚合 messages、task、tool_calls、observations、planner_outputs。每
 
 #### 7. Loop
 
-主循环：Planning → Executing → WaitingTool → Planning，直到 Reply 或终止。见 [Runtime State Machine](./04-runtime-state-machine.md)。
+主循环：Planning → Executing → WaitingTool → Planning，直到 Reply 或终止。
+
+Phase6 实现为 `runtime/loop.py` 的同步最小闭环（Tool 立即返回 Observation）。完整状态机（Retry/Timeout/Cancel）见 Phase7。见 [Runtime State Machine](./04-runtime-state-machine.md)。
 
 #### 8. Answer
 
@@ -136,7 +138,7 @@ Runtime 进入 `Completed`，Application 层封装 Answer 返回 Client。
 | Phase3 | 引入 Runtime 层；Message、State、Task |
 | Phase4 | 引入 LLM Adapter 层 |
 | Phase5 | 引入 Planning 层 |
-| Phase6 | 引入 Execution + Tools 层 |
+| Phase6 | 引入 Execution + Tools 层；`runtime/loop.py` 最小闭环 |
 | Phase8–10 | Memory 扩展 State；Infrastructure 持久化 |
 | Phase11–13 | Workflow 编排层（Node/Edge） |
 | Phase14 | MCP 与 Tools 层整合 |

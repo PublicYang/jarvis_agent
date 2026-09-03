@@ -249,7 +249,7 @@ erDiagram
 |------|------|-------|----------|
 | Message, State, Task | runtime/ | Phase3 | `runtime/models.py` |
 | PlannerOutput | planner/ | Phase5 | `planner/base.py` |
-| ToolCall, Observation | tools/ | Phase6 | — |
+| ToolCall, Observation | tools/ | Phase6 | `tools/base.py` |
 | MemoryRecord | memory/ | Phase8 | — |
 
 ### Phase3 实现说明
@@ -257,8 +257,8 @@ erDiagram
 - `Message`：`frozen=True`，创建后不可变
 - `StateStatus`：`created` / `running` / `waiting_tool` / `completed` / `failed` / `cancelled`
 - `TaskStatus`：`pending` / `in_progress` / `completed` / `failed`
-- `State.tool_calls` / `observations`：Phase3 暂用 `list[Any]`，Phase6 替换为强类型
+- `State.tool_calls` / `observations`：Phase6 起为 `list[ToolCall]` / `list[Observation]`
 - `State.planner_outputs`：Phase3 暂用 `list[Any]`，Phase7 集成时强类型化
-- `PlannerOutput.tool_call`：Phase5 使用 `ToolCallIntent`，Phase6 迁移为完整 `ToolCall`
+- `PlannerOutput.tool_call`：Phase6 起为完整 `ToolCall`（替代 Phase5 的 `ToolCallIntent`）
 
 见 [Project Structure](./05-project-structure.md)。
