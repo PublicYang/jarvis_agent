@@ -8,6 +8,7 @@ from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+from tools.base import Observation, ToolCall
 
 
 def _utcnow() -> datetime:
@@ -67,9 +68,8 @@ class State(BaseModel):
     status: StateStatus = StateStatus.CREATED
     messages: list[Message] = Field(default_factory=list)
     task: Task | None = None
-    # Typed as Any until Phase5/6 introduce PlannerOutput, ToolCall, Observation.
-    tool_calls: list[Any] = Field(default_factory=list)
-    observations: list[Any] = Field(default_factory=list)
+    tool_calls: list[ToolCall] = Field(default_factory=list)
+    observations: list[Observation] = Field(default_factory=list)
     planner_outputs: list[Any] = Field(default_factory=list)
     memory_refs: list[str] = Field(default_factory=list)
     error: str | None = None

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import pytest
 from llm.adapter import LLMRequest, LLMResponse
-from planner.base import DecisionType, PlannerOutput, ToolCallIntent
+from planner.base import DecisionType, PlannerOutput
 from planner.simple import SimplePlanner, planning_state
 from pydantic import ValidationError
 from runtime.models import Message, MessageRole, State, StateStatus
+from tools.base import ToolCall
 
 
 class StubLLM:
@@ -37,7 +38,7 @@ def test_planner_output_reply_requires_content() -> None:
 def test_planner_output_tool_call_validation() -> None:
     output = PlannerOutput(
         decision_type=DecisionType.TOOL_CALL,
-        tool_call=ToolCallIntent(tool_name="search", arguments={"q": "jarvis"}),
+        tool_call=ToolCall(tool_name="search", arguments={"q": "jarvis"}),
     )
     assert output.tool_call is not None
     assert output.tool_call.tool_name == "search"

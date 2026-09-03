@@ -5,10 +5,11 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import Any, Protocol
+from typing import Protocol
 
 from pydantic import BaseModel, Field, model_validator
 from runtime.models import State
+from tools.base import ToolCall
 
 
 def _utcnow() -> datetime:
@@ -25,18 +26,11 @@ class DecisionType(StrEnum):
     CLARIFY = "clarify"
 
 
-class ToolCallIntent(BaseModel):
-    """Planned tool invocation from Planner; full ToolCall is Phase6."""
-
-    tool_name: str
-    arguments: dict[str, Any] = Field(default_factory=dict)
-
-
 class PlannerOutput(BaseModel):
     id: str = Field(default_factory=_new_id)
     decision_type: DecisionType
     content: str | None = None
-    tool_call: ToolCallIntent | None = None
+    tool_call: ToolCall | None = None
     clarify_message: str | None = None
     reasoning: str | None = None
     created_at: datetime = Field(default_factory=_utcnow)

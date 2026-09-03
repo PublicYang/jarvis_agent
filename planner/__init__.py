@@ -1,11 +1,6 @@
 """Jarvis Planner."""
 
-from planner.base import (
-    DecisionType,
-    Planner,
-    PlannerOutput,
-    ToolCallIntent,
-)
+from planner.base import DecisionType, Planner, PlannerOutput
 from planner.simple import SimplePlanner, planning_state
 
 __all__ = [
@@ -13,6 +8,5 @@ __all__ = [
     "Planner",
     "PlannerOutput",
     "SimplePlanner",
-    "ToolCallIntent",
     "planning_state",
 ]
