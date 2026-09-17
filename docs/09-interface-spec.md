@@ -122,6 +122,7 @@ class ToolRegistry(Protocol):
 ```python
 # memory/store.py
 
+@runtime_checkable
 class MemoryStore(Protocol):
     """Phase8 引入。"""
 
@@ -129,9 +130,16 @@ class MemoryStore(Protocol):
 
     def read(self, key: str, scope: MemoryScope) -> MemoryRecord | None: ...
 
-    def search(self, query: str, limit: int) -> list[MemoryRecord]: ...
+    def search(
+        self,
+        query: str,
+        limit: int = 10,
+        scope: MemoryScope | None = None,
+    ) -> list[MemoryRecord]: ...
 
     def delete(self, record_id: str) -> None: ...
+
+    def get(self, record_id: str) -> MemoryRecord | None: ...
 ```
 
 ---

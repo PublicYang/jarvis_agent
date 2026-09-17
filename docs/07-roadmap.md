@@ -155,6 +155,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `memory/store.py`；Memory 读写测试 |
 | **Quality Gate** | Memory 读写一致；[Risk — Memory 污染](./11-risk-register.md) 缓解验证 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase9 — Context Engineering
@@ -264,8 +266,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V1 | Phase5 Planner | ✅ 完成 |
 | V1 | Phase6 Tool Calling | ✅ 完成 |
 | V1 | Phase7 Runtime Loop | ✅ 完成 |
-| V2 | Phase8 Memory Foundation | 🔄 下一 Phase |
-| V2 | Phase9–10 | ⏳ 待开始 |
+| V2 | Phase8 Memory Foundation | ✅ 完成 |
+| V2 | Phase9 Context Engineering | 🔄 下一 Phase |
+| V2 | Phase10 Persistence | ⏳ 待开始 |
 | V3 | Phase11–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |
 

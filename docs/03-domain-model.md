@@ -250,7 +250,7 @@ erDiagram
 | Message, State, Task | runtime/ | Phase3 | `runtime/models.py` |
 | PlannerOutput | planner/ | Phase5 | `planner/base.py` |
 | ToolCall, Observation | tools/ | Phase6 | `tools/base.py` |
-| MemoryRecord | memory/ | Phase8 | — |
+| MemoryRecord | memory/ | Phase8 | `memory/models.py` |
 
 ### Phase3 实现说明
 
