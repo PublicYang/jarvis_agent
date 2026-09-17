@@ -149,15 +149,24 @@ class MemoryStore(Protocol):
 ```python
 # memory/context.py
 
+@runtime_checkable
 class ContextBuilder(Protocol):
     """Phase9 引入。"""
 
-    def build(self, state: State, memory: MemoryStore) -> list[Message]:
+    def build(
+        self,
+        state: State,
+        memory: MemoryStore | None = None,
+    ) -> list[Message]:
         """
         从 State + Memory 构建 LLM Context。
-        负责压缩与 Token 预算。
+        负责压缩、滑动窗口与 Token 预算。
         """
         ...
+
+
+class StandardContextBuilder:
+    """标准上下文构建器：提供滑动窗口裁剪、Token 预算估算与 Memory 结构化注入。"""
 ```
 
 ---

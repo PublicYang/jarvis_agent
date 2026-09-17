@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest
 from llm.adapter import LLMRequest, LLMResponse
+from memory.models import MemoryRecord, MemoryScope
+from memory.store import InMemoryMemoryStore
 from planner.base import DecisionType, PlannerOutput
 from planner.simple import SimplePlanner, planning_state
 from pydantic import ValidationError
@@ -99,3 +101,36 @@ def test_simple_planner_reply_with_mock_llm() -> None:
     assert llm.requests[0]["model"] == "gpt-4o-mini"
     assert llm.requests[0]["temperature"] == 0.1
     assert llm.requests[0]["messages"] == state.messages
+
+
+def test_simple_planner_with_context_builder_and_memory() -> None:
+    store = InMemoryMemoryStore()
+    rec = MemoryRecord(
+        key="user_style",
+        content="formal",
+        scope=MemoryScope.USER,
+    )
+    store.write(rec)
+
+    llm = StubLLM(
+        {
+            "content": "Formal greeting",
+            "finish_reason": "stop",
+            "usage": {"total_tokens": 10},
+        }
+    )
+    planner = SimplePlanner(llm=llm, model="gpt-4o", memory=store)
+    state = State(
+        messages=[Message(role=MessageRole.USER, content="Hello")],
+        memory_refs=[rec.id],
+    )
+
+    output = planner.plan(state)
+
+    assert output.decision_type == DecisionType.REPLY
+    assert output.content == "Formal greeting"
+    assert len(llm.requests) == 1
+    messages = llm.requests[0]["messages"]
+    # Check that memory context was injected into the prompt
+    assert any("user_style: formal" in m.content for m in messages)
+    assert any("Hello" in m.content for m in messages)

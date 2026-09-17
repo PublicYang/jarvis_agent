@@ -84,20 +84,41 @@ class InMemoryMemoryStore:
     ) -> list[MemoryRecord]:
         """Search non-expired records matching query in key or content."""
         with self._lock:
-            q = query.lower()
+            q = query.lower().strip()
             matches: list[MemoryRecord] = []
             for record in self._records.values():
                 if record.is_expired():
                     continue
                 if scope is not None and record.scope != scope:
                     continue
-                if q in record.key.lower() or q in record.content.lower():
+                k_lower = record.key.lower()
+                c_lower = record.content.lower()
+                if not q:
+                    matches.append(record)
+                elif (
+                    q in k_lower
+                    or q in c_lower
+                    or (len(k_lower) > 1 and k_lower in q)
+                    or (len(c_lower) > 1 and c_lower in q)
+                ):
                     matches.append(record)
 
             def sort_key(rec: MemoryRecord) -> tuple[int, float]:
                 k = rec.key.lower()
-                exact_match = 0 if k == q else (1 if q in k else 2)
-                return (exact_match, -rec.created_at.timestamp())
+                c = rec.content.lower()
+                if q and k == q:
+                    rank = 0
+                elif q and q in k:
+                    rank = 1
+                elif q and len(k) > 1 and k in q:
+                    rank = 2
+                elif q and q in c:
+                    rank = 3
+                elif q and len(c) > 1 and c in q:
+                    rank = 4
+                else:
+                    rank = 5
+                return (rank, -rec.created_at.timestamp())
 
             matches.sort(key=sort_key)
             return matches[:limit]

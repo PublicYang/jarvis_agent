@@ -170,6 +170,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `memory/context.py`；压缩策略测试 |
 | **Quality Gate** | 长对话压缩后 Planner 仍可决策；[Risk — Context 无限增长](./11-risk-register.md) 缓解 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase10 — Persistence
@@ -267,8 +269,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V1 | Phase6 Tool Calling | ✅ 完成 |
 | V1 | Phase7 Runtime Loop | ✅ 完成 |
 | V2 | Phase8 Memory Foundation | ✅ 完成 |
-| V2 | Phase9 Context Engineering | 🔄 下一 Phase |
-| V2 | Phase10 Persistence | ⏳ 待开始 |
+| V2 | Phase9 Context Engineering | ✅ 完成 |
+| V2 | Phase10 Persistence | 🔄 下一 Phase |
 | V3 | Phase11–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |
 

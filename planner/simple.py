@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from llm.adapter import LLMAdapter, LLMRequest
+from memory.context import ContextBuilder, StandardContextBuilder
+from memory.store import MemoryStore
 from runtime.models import MessageRole, State, StateStatus
 
 from planner.base import DecisionType, PlannerOutput
@@ -18,11 +20,15 @@ class SimplePlanner:
         model: str,
         temperature: float = 0.0,
         max_tokens: int | None = None,
+        context_builder: ContextBuilder | None = None,
+        memory: MemoryStore | None = None,
     ) -> None:
         self._llm = llm
         self._model = model
         self._temperature = temperature
         self._max_tokens = max_tokens
+        self._context_builder = context_builder or StandardContextBuilder()
+        self._memory = memory
 
     def plan(self, state: State) -> PlannerOutput:
         user_messages = [
@@ -34,8 +40,10 @@ class SimplePlanner:
                 clarify_message="Please provide a user message to continue.",
             )
 
+        messages = self._context_builder.build(state, self._memory)
+
         request: LLMRequest = {
-            "messages": list(state.messages),
+            "messages": messages,
             "model": self._model,
             "temperature": self._temperature,
             "max_tokens": self._max_tokens,
