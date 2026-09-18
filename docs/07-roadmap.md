@@ -185,6 +185,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `memory/sqlite.py`；持久化集成测试 |
 | **Quality Gate** | 重启后 Memory 可恢复；读写一致 |
 
+**状态**：✅ 完成
+
 ---
 
 # V3 Workflow Engine
@@ -270,8 +272,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V1 | Phase7 Runtime Loop | ✅ 完成 |
 | V2 | Phase8 Memory Foundation | ✅ 完成 |
 | V2 | Phase9 Context Engineering | ✅ 完成 |
-| V2 | Phase10 Persistence | 🔄 下一 Phase |
-| V3 | Phase11–13 | ⏳ 待开始 |
+| V2 | Phase10 Persistence | ✅ 完成 |
+| V3 | Phase11 Workflow Foundation | 🔄 下一 Phase |
+| V3 | Phase12–13 | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |
 
 ---

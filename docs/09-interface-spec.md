@@ -140,6 +140,18 @@ class MemoryStore(Protocol):
     def delete(self, record_id: str) -> None: ...
 
     def get(self, record_id: str) -> MemoryRecord | None: ...
+
+
+# memory/sqlite.py
+
+class SQLiteMemoryStore:
+    """Phase10 引入：基于 SQLite 的持久化 MemoryStore，并支持 State/Session 序列化恢复。"""
+
+    def __init__(self, db_path: str | Path = ":memory:") -> None: ...
+
+    def save_state(self, state: State) -> None: ...
+
+    def load_state(self, state_id: str) -> State | None: ...
 ```
 
 ---
