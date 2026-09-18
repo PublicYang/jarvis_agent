@@ -7,6 +7,8 @@ from typing import Annotated
 
 import typer
 from llm.openai_compat import OpenAICompatAdapter
+from memory.sqlite import SQLiteMemoryStore
+from memory.store import MemoryStore
 from planner.base import DecisionType, PlannerOutput
 from planner.simple import SimplePlanner
 from runtime.engine import RuntimeEngine
@@ -58,10 +60,11 @@ class DemoPlanner:
 
 def build_engine(
     *,
-    demo: bool,
-    api_key: str | None,
-    base_url: str,
-    model: str,
+    demo: bool = False,
+    api_key: str | None = None,
+    base_url: str = "https://api.openai.com/v1",
+    model: str = "gpt-4o-mini",
+    memory: MemoryStore | None = None,
     approval_callback=None,
 ) -> RuntimeEngine:
     registry = InMemoryToolRegistry()
@@ -77,7 +80,7 @@ def build_engine(
                 "(pass --api-key or set JARVIS_API_KEY)"
             )
         llm = OpenAICompatAdapter(api_key=api_key, base_url=base_url)
-        planner = SimplePlanner(llm=llm, model=model)
+        planner = SimplePlanner(llm=llm, model=model, memory=memory)
 
     return RuntimeEngine(
         planner=planner,
@@ -110,34 +113,71 @@ def chat(
         str,
         typer.Option("--model", envvar="JARVIS_MODEL", help="Model name"),
     ] = "gpt-4o-mini",
+    db_path: Annotated[
+        str | None,
+        typer.Option(
+            "--db-path",
+            envvar="JARVIS_DB_PATH",
+            help="Path to SQLite memory database for persistence",
+        ),
+    ] = None,
+    session_id: Annotated[
+        str | None,
+        typer.Option(
+            "--session-id",
+            envvar="JARVIS_SESSION_ID",
+            help="Session ID for state and conversation continuity",
+        ),
+    ] = None,
 ) -> None:
     """Run one Agent turn and print the assistant reply."""
     key = api_key or os.getenv("JARVIS_API_KEY")
-    engine = build_engine(
-        demo=demo,
-        api_key=key,
-        base_url=base_url,
-        model=model,
-        approval_callback=None,
-    )
-    final = engine.run(Message(role=MessageRole.USER, content=message))
-    if final.status.value == "failed":
-        typer.echo(f"Failed: {final.error}", err=True)
-        raise typer.Exit(code=1)
-    if final.status.value == "cancelled":
-        typer.echo("Cancelled", err=True)
-        raise typer.Exit(code=1)
+    memory_store: SQLiteMemoryStore | None = None
+    if db_path:
+        memory_store = SQLiteMemoryStore(db_path=db_path)
 
-    assistant = next(
-        (
-            item.content
-            for item in reversed(final.messages)
-            if item.role == MessageRole.ASSISTANT
-        ),
-        "",
-    )
-    typer.echo(assistant)
-    typer.echo(f"[status={final.status} state_id={final.id}]", err=True)
+    try:
+        engine = build_engine(
+            demo=demo,
+            api_key=key,
+            base_url=base_url,
+            model=model,
+            memory=memory_store,
+            approval_callback=None,
+        )
+
+        user_msg = Message(role=MessageRole.USER, content=message)
+        resume_state: State | None = None
+        if memory_store and session_id:
+            resume_state = memory_store.load_state(session_id)
+            if resume_state is None:
+                resume_state = State(id=session_id, messages=[])
+
+        final = engine.run(user_msg, resume_state=resume_state)
+
+        if memory_store and session_id:
+            memory_store.save_state(final)
+
+        if final.status.value == "failed":
+            typer.echo(f"Failed: {final.error}", err=True)
+            raise typer.Exit(code=1)
+        if final.status.value == "cancelled":
+            typer.echo("Cancelled", err=True)
+            raise typer.Exit(code=1)
+
+        assistant = next(
+            (
+                item.content
+                for item in reversed(final.messages)
+                if item.role == MessageRole.ASSISTANT
+            ),
+            "",
+        )
+        typer.echo(assistant)
+        typer.echo(f"[status={final.status} state_id={final.id}]", err=True)
+    finally:
+        if memory_store:
+            memory_store.close()
 
 
 if __name__ == "__main__":

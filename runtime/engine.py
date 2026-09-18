@@ -66,11 +66,32 @@ class RuntimeEngine:
         self._cancelled: set[str] = set()
         self._active: dict[str, State] = {}
 
-    def run(self, user_message: Message) -> State:
-        state = State(
-            messages=[user_message],
-            status=StateStatus.CREATED,
-        )
+    def run(
+        self,
+        user_message: Message | State,
+        *,
+        resume_state: State | None = None,
+    ) -> State:
+        if isinstance(user_message, State):
+            state = user_message
+            if state.status in {
+                StateStatus.COMPLETED,
+                StateStatus.FAILED,
+                StateStatus.CANCELLED,
+            }:
+                state = state.model_copy(update={"status": StateStatus.CREATED})
+        elif resume_state is not None:
+            state = resume_state.model_copy(
+                update={
+                    "messages": [*resume_state.messages, user_message],
+                    "status": StateStatus.CREATED,
+                }
+            )
+        else:
+            state = State(
+                messages=[user_message],
+                status=StateStatus.CREATED,
+            )
         self._active[state.id] = state
         self._phases[state.id] = RuntimePhase.IDLE
         started = time.monotonic()

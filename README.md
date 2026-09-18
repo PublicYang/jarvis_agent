@@ -32,8 +32,11 @@ Client → Jarvis Agent → Runtime → Tools → LLM
 | **V1** | Phase5 Planner | ✅ 完成 |
 | **V1** | Phase6 Tool Calling | ✅ 完成 |
 | **V1** | Phase7 Runtime Loop | ✅ 完成 |
+| **V2** | Phase8 Memory Foundation | ✅ 完成 |
+| **V2** | Phase9 Context Engineering | ✅ 完成 |
+| **V2** | Phase10 Persistence | ✅ 完成 |
 
-**V1 Core Runtime 已完成。** 下一 Phase：**Phase8 Memory Foundation**
+**V2 Stateful Agent 已完成。** 下一 Phase：**Phase11 Workflow Foundation (V3)**
 
 ---
 
@@ -111,8 +114,16 @@ uv run pytest
 uv run jarvis chat --demo "hello"
 uv run jarvis chat --demo "echo jarvis"
 
+# 离线多轮会话（使用本地 SQLite 记忆落盘）
+uv run jarvis chat --demo --db-path "jarvis.db" --session-id "my_session" "hello"
+uv run jarvis chat --demo --db-path "jarvis.db" --session-id "my_session" "echo jarvis"
+
 # 真实 LLM（需 API Key）
 uv run jarvis chat --api-key "$JARVIS_API_KEY" "你好"
+
+# 真实 LLM + 持久化多轮会话
+uv run jarvis chat --api-key "$JARVIS_API_KEY" --db-path "jarvis.db" --session-id "sess-1" "我的名字叫张三"
+uv run jarvis chat --api-key "$JARVIS_API_KEY" --db-path "jarvis.db" --session-id "sess-1" "我叫什么名字？"
 ```
 
 ---
