@@ -144,12 +144,12 @@ class StandardContextBuilder:
                     content=memory_section,
                 )
 
+        if not history_msgs:
+            return [system_msg] if system_msg else []
+
         # 3. Calculate budget for history messages
         system_tokens = self.estimate_message_tokens(system_msg) if system_msg else 0
         available_history_tokens = max(0, self._max_context_tokens - system_tokens)
-
-        if not history_msgs:
-            return [system_msg] if system_msg else []
 
         # Check if entire history fits
         total_history_tokens = sum(
