@@ -68,19 +68,11 @@ class RuntimeEngine:
 
     def run(
         self,
-        user_message: Message | State,
+        user_message: Message,
         *,
         resume_state: State | None = None,
     ) -> State:
-        if isinstance(user_message, State):
-            state = user_message
-            if state.status in {
-                StateStatus.COMPLETED,
-                StateStatus.FAILED,
-                StateStatus.CANCELLED,
-            }:
-                state = state.model_copy(update={"status": StateStatus.CREATED})
-        elif resume_state is not None:
+        if resume_state is not None:
             state = resume_state.model_copy(
                 update={
                     "messages": [*resume_state.messages, user_message],
