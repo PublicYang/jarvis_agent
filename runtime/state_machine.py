@@ -16,6 +16,7 @@ class RuntimePhase(StrEnum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    INTERRUPTED = "interrupted"
 
 
 ALLOWED_TRANSITIONS: dict[RuntimePhase, frozenset[RuntimePhase]] = {
@@ -30,6 +31,7 @@ ALLOWED_TRANSITIONS: dict[RuntimePhase, frozenset[RuntimePhase]] = {
             RuntimePhase.COMPLETED,
             RuntimePhase.FAILED,
             RuntimePhase.CANCELLED,
+            RuntimePhase.INTERRUPTED,
         }
     ),
     RuntimePhase.EXECUTING: frozenset(
@@ -39,6 +41,7 @@ ALLOWED_TRANSITIONS: dict[RuntimePhase, frozenset[RuntimePhase]] = {
             RuntimePhase.COMPLETED,
             RuntimePhase.FAILED,
             RuntimePhase.CANCELLED,
+            RuntimePhase.INTERRUPTED,
         }
     ),
     RuntimePhase.WAITING_TOOL: frozenset(
@@ -53,6 +56,16 @@ ALLOWED_TRANSITIONS: dict[RuntimePhase, frozenset[RuntimePhase]] = {
         {
             RuntimePhase.EXECUTING,
             RuntimePhase.PLANNING,
+            RuntimePhase.CANCELLED,
+            RuntimePhase.FAILED,
+            RuntimePhase.INTERRUPTED,
+        }
+    ),
+    RuntimePhase.INTERRUPTED: frozenset(
+        {
+            RuntimePhase.PLANNING,
+            RuntimePhase.EXECUTING,
+            RuntimePhase.WAITING_APPROVAL,
             RuntimePhase.CANCELLED,
             RuntimePhase.FAILED,
         }
@@ -82,6 +95,7 @@ def to_state_status(phase: RuntimePhase) -> StateStatus | None:
         RuntimePhase.EXECUTING: StateStatus.RUNNING,
         RuntimePhase.WAITING_TOOL: StateStatus.WAITING_TOOL,
         RuntimePhase.WAITING_APPROVAL: StateStatus.RUNNING,
+        RuntimePhase.INTERRUPTED: StateStatus.RUNNING,
         RuntimePhase.COMPLETED: StateStatus.COMPLETED,
         RuntimePhase.FAILED: StateStatus.FAILED,
         RuntimePhase.CANCELLED: StateStatus.CANCELLED,

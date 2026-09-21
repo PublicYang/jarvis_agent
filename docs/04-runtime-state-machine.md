@@ -128,9 +128,24 @@ Planning ──(tool_call, requires_approval)──→ WaitingApproval
 WaitingApproval ──(Approved)──→ Executing
 WaitingApproval ──(Rejected)──→ Planning
 WaitingApproval ──(Timeout)──→ Cancelled
+WaitingApproval / Planning / Executing ──(Interrupt)──→ Interrupted
 ```
 
 **引入 Phase**：Phase7（基础）→ Phase12（Workflow Interrupt/Resume 完善）
+
+---
+
+## Interrupt & Resume
+
+**为什么存在**：长运行 Workflow 需支持断点暂停、人工干预输入后恢复执行，保证可观测与可控性。
+
+```text
+WaitingApproval / Planning / Executing ──(Interrupt)──→ Interrupted
+Interrupted ──(Resume with input)──→ Planning / Executing
+Interrupted ──(Cancel)──→ Cancelled
+```
+
+**引入 Phase**：Phase12
 
 ---
 
@@ -152,6 +167,7 @@ WaitingApproval ──(Timeout)──→ Cancelled
 | Planning, Executing | Running |
 | WaitingTool | WaitingTool |
 | WaitingApproval | Running |
+| Interrupted | Running |
 | Completed | Completed |
 | Failed | Failed |
 | Cancelled | Cancelled |
@@ -173,4 +189,9 @@ WaitingApproval ──(Timeout)──→ Cancelled
 - `runtime/state_machine.py`：`RuntimePhase` + `transition()` + `to_state_status()`
 - `runtime/engine.py`：按状态机驱动；Retry / Timeout / Cancel / Approval 可测
 - WaitingApproval 映射到 `State.status=running`（与上文对照表一致）
-- Phase12 将完善 Workflow Interrupt/Resume
+
+### Phase12 实现说明
+
+- `runtime/state_machine.py`：新增 `RuntimePhase.INTERRUPTED`，支持双向安全转移
+- `workflow/engine.py`：`WorkflowEngine` 支持节点断点中断（`interrupt_before` / `interrupt_after`）、人工审批（`__interrupt__`）、断点恢复（`resume`）与执行全链路回放（`replay`）
+

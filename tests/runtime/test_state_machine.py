@@ -27,6 +27,34 @@ def test_phase_to_state_status_mapping() -> None:
     assert to_state_status(RuntimePhase.EXECUTING) == StateStatus.RUNNING
     assert to_state_status(RuntimePhase.WAITING_TOOL) == StateStatus.WAITING_TOOL
     assert to_state_status(RuntimePhase.WAITING_APPROVAL) == StateStatus.RUNNING
+    assert to_state_status(RuntimePhase.INTERRUPTED) == StateStatus.RUNNING
     assert to_state_status(RuntimePhase.COMPLETED) == StateStatus.COMPLETED
     assert to_state_status(RuntimePhase.FAILED) == StateStatus.FAILED
     assert to_state_status(RuntimePhase.CANCELLED) == StateStatus.CANCELLED
+
+
+def test_interrupted_transitions() -> None:
+    assert (
+        transition(RuntimePhase.WAITING_APPROVAL, RuntimePhase.INTERRUPTED)
+        == RuntimePhase.INTERRUPTED
+    )
+    assert (
+        transition(RuntimePhase.PLANNING, RuntimePhase.INTERRUPTED)
+        == RuntimePhase.INTERRUPTED
+    )
+    assert (
+        transition(RuntimePhase.EXECUTING, RuntimePhase.INTERRUPTED)
+        == RuntimePhase.INTERRUPTED
+    )
+    assert (
+        transition(RuntimePhase.INTERRUPTED, RuntimePhase.EXECUTING)
+        == RuntimePhase.EXECUTING
+    )
+    assert (
+        transition(RuntimePhase.INTERRUPTED, RuntimePhase.PLANNING)
+        == RuntimePhase.PLANNING
+    )
+    assert (
+        transition(RuntimePhase.INTERRUPTED, RuntimePhase.CANCELLED)
+        == RuntimePhase.CANCELLED
+    )

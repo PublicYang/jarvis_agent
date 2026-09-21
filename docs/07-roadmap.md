@@ -217,6 +217,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `workflow/engine.py`；状态机更新 |
 | **Quality Gate** | Workflow 可回放；Interrupt/Resume 可测 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase13 — Parallel Execution
@@ -276,8 +278,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V2 | Phase9 Context Engineering | ✅ 完成 |
 | V2 | Phase10 Persistence | ✅ 完成 |
 | V3 | Phase11 Workflow Foundation | ✅ 完成 |
-| V3 | Phase12 State Machine Upgrade | 🔄 下一 Phase |
-| V3 | Phase13 Parallel Execution | ⏳ 待开始 |
+| V3 | Phase12 State Machine Upgrade | ✅ 完成 |
+| V3 | Phase13 Parallel Execution | 🔄 下一 Phase |
 | V4 | Phase14–15 | ⏳ 待开始 |
 
 ---
