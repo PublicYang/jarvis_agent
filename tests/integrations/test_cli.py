@@ -104,3 +104,83 @@ def test_cli_chat_with_sqlite_persistence(tmp_path) -> None:
         assert saved.messages[1].content == "Demo reply: first turn message"
         assert saved.messages[2].content == "second turn message"
         assert saved.messages[3].content == "Demo reply: second turn message"
+
+
+def test_cli_chat_explicit_react_engine() -> None:
+    result = runner.invoke(app, ["chat", "--engine", "react", "--demo", "hello react"])
+    assert result.exit_code == 0
+    assert "Demo reply: hello react" in result.stdout
+
+
+def test_cli_chat_workflow_engine_demo_reply() -> None:
+    result = runner.invoke(
+        app, ["chat", "--engine", "workflow", "--demo", "hello flow"]
+    )
+    assert result.exit_code == 0
+    assert "Demo reply: hello flow" in result.stdout
+
+
+def test_cli_chat_workflow_engine_demo_echo_tool() -> None:
+    result = runner.invoke(
+        app, ["chat", "--engine", "workflow", "--demo", "echo graph"]
+    )
+    assert result.exit_code == 0
+    assert "Demo observed: graph" in result.stdout
+
+
+def test_cli_chat_workflow_engine_with_sqlite_persistence(tmp_path) -> None:
+    from memory.sqlite import SQLiteMemoryStore
+
+    db_file = tmp_path / "cli_workflow_test.db"
+
+    # Turn 1 via chat --engine workflow
+    res1 = runner.invoke(
+        app,
+        [
+            "chat",
+            "--engine",
+            "workflow",
+            "--demo",
+            "--db-path",
+            str(db_file),
+            "--session-id",
+            "flow-session-1",
+            "first turn",
+        ],
+    )
+    assert res1.exit_code == 0
+    assert "Demo reply: first turn" in res1.stdout
+
+    # Turn 2 via chat --engine workflow
+    res2 = runner.invoke(
+        app,
+        [
+            "chat",
+            "--engine",
+            "workflow",
+            "--demo",
+            "--db-path",
+            str(db_file),
+            "--session-id",
+            "flow-session-1",
+            "second turn",
+        ],
+    )
+    assert res2.exit_code == 0
+    assert "Demo reply: second turn" in res2.stdout
+
+    with SQLiteMemoryStore(db_path=str(db_file)) as store:
+        saved = store.load_state("flow-session-1")
+        assert saved is not None
+        assert len(saved.messages) == 4
+        assert saved.messages[0].content == "first turn"
+        assert saved.messages[2].content == "second turn"
+
+
+def test_cli_chat_invalid_engine() -> None:
+    result = runner.invoke(
+        app,
+        ["chat", "--engine", "unsupported", "--demo", "ping"],
+    )
+    assert result.exit_code != 0
+    assert "Unknown engine" in result.output

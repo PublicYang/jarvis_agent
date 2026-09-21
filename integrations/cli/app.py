@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import os
-from typing import Annotated
+import uuid
+from typing import Annotated, Any
 
 import typer
 from llm.openai_compat import OpenAICompatAdapter
@@ -12,11 +13,14 @@ from memory.store import MemoryStore
 from planner.base import DecisionType, PlannerOutput
 from planner.simple import SimplePlanner
 from runtime.engine import RuntimeEngine
-from runtime.models import Message, MessageRole, State
+from runtime.models import Message, MessageRole, State, StateStatus
 from tools.base import ToolCall
 from tools.echo import EchoTool
 from tools.executor import ToolExecutor
 from tools.registry import InMemoryToolRegistry
+from workflow.edge import WorkflowGraph
+from workflow.engine import WorkflowEngine
+from workflow.node import FunctionNode
 
 app = typer.Typer(help="Jarvis Agent CLI", no_args_is_help=True)
 
@@ -90,6 +94,186 @@ def build_engine(
     )
 
 
+def build_chat_workflow_graph(
+    planner: Any,
+    executor: ToolExecutor,
+) -> WorkflowGraph:
+    """Build a cyclic WorkflowGraph that implements the ReAct agent turn loop."""
+
+    def plan_step(context: dict[str, Any]) -> dict[str, Any]:
+        state: State = context["state"]
+        output: PlannerOutput = planner.plan(state)
+        context["planner_output"] = output
+
+        if output.decision_type in {DecisionType.REPLY, DecisionType.CLARIFY}:
+            msg = Message(
+                role=MessageRole.ASSISTANT,
+                content=output.content or "",
+            )
+            context["state"] = state.model_copy(
+                update={"messages": [*state.messages, msg]}
+            )
+            context["reply"] = output.content or ""
+            context["decision"] = "reply"
+        elif output.decision_type == DecisionType.TOOL_CALL:
+            context["tool_call"] = output.tool_call
+            context["decision"] = "tool_call"
+        return context
+
+    def tool_step(context: dict[str, Any]) -> dict[str, Any]:
+        state: State = context["state"]
+        tool_call: ToolCall | None = context.get("tool_call")
+        if tool_call is None:
+            context["decision"] = "reply"
+            return context
+
+        _finished_call, obs = executor.execute(tool_call)
+        new_obs = [*state.observations, obs]
+        tool_msg = Message(
+            role=MessageRole.TOOL,
+            content=str(obs.content),
+            name=tool_call.tool_name,
+            tool_call_id=obs.tool_call_id,
+        )
+        context["state"] = state.model_copy(
+            update={
+                "observations": new_obs,
+                "messages": [*state.messages, tool_msg],
+            }
+        )
+        context["decision"] = "planning"
+        return context
+
+    graph = WorkflowGraph()
+    graph.add_node(FunctionNode(node_id="planner", func=plan_step))
+    graph.add_node(FunctionNode(node_id="tool", func=tool_step))
+
+    graph.set_entry_point("planner")
+    graph.add_edge(
+        "planner",
+        "tool",
+        condition=lambda ctx: ctx.get("decision") == "tool_call",
+    )
+    graph.add_edge("tool", "planner")
+
+    return graph
+
+
+def _run_react_chat(
+    *,
+    message: str,
+    demo: bool,
+    api_key: str | None,
+    base_url: str,
+    model: str,
+    memory_store: SQLiteMemoryStore | None,
+    session_id: str | None,
+) -> None:
+    """Execute chat turn using RuntimeEngine (ReAct loop)."""
+    engine = build_engine(
+        demo=demo,
+        api_key=api_key,
+        base_url=base_url,
+        model=model,
+        memory=memory_store,
+        approval_callback=None,
+    )
+
+    user_msg = Message(role=MessageRole.USER, content=message)
+    resume_state: State | None = None
+    if memory_store and session_id:
+        resume_state = memory_store.load_state(session_id)
+        if resume_state is None:
+            resume_state = State(id=session_id, messages=[])
+
+    final = engine.run(user_msg, resume_state=resume_state)
+
+    if memory_store and session_id:
+        memory_store.save_state(final)
+
+    if final.status.value == "failed":
+        typer.echo(f"Failed: {final.error}", err=True)
+        raise typer.Exit(code=1)
+    if final.status.value == "cancelled":
+        typer.echo("Cancelled", err=True)
+        raise typer.Exit(code=1)
+
+    assistant = next(
+        (
+            item.content
+            for item in reversed(final.messages)
+            if item.role == MessageRole.ASSISTANT
+        ),
+        "",
+    )
+    typer.echo(assistant)
+    typer.echo(f"[status={final.status} state_id={final.id}]", err=True)
+
+
+def _run_workflow_chat(
+    *,
+    message: str,
+    demo: bool,
+    api_key: str | None,
+    base_url: str,
+    model: str,
+    memory_store: SQLiteMemoryStore | None,
+    session_id: str | None,
+) -> None:
+    """Execute chat turn using WorkflowGraph & WorkflowEngine."""
+    registry = InMemoryToolRegistry()
+    registry.register(EchoTool())
+    executor = ToolExecutor(registry)
+
+    if demo:
+        planner = DemoPlanner()
+    else:
+        if not api_key:
+            raise typer.BadParameter(
+                "API key required unless --demo is set "
+                "(pass --api-key or set JARVIS_API_KEY)"
+            )
+        llm = OpenAICompatAdapter(api_key=api_key, base_url=base_url)
+        planner = SimplePlanner(llm=llm, model=model, memory=memory_store)
+
+    user_msg = Message(role=MessageRole.USER, content=message)
+    state: State | None = None
+    if memory_store and session_id:
+        state = memory_store.load_state(session_id)
+    if state is None:
+        state = State(id=session_id or str(uuid.uuid4()), messages=[])
+
+    state = state.model_copy(
+        update={
+            "status": StateStatus.RUNNING,
+            "messages": [*state.messages, user_msg],
+        }
+    )
+
+    graph = build_chat_workflow_graph(planner=planner, executor=executor)
+    engine = WorkflowEngine()
+    final_context = engine.run(
+        graph,
+        input={"state": state, "decision": "planning", "reply": ""},
+    )
+    final_state: State = final_context["state"]
+    final_state = final_state.model_copy(update={"status": StateStatus.COMPLETED})
+
+    if memory_store and session_id:
+        memory_store.save_state(final_state)
+
+    assistant = next(
+        (
+            item.content
+            for item in reversed(final_state.messages)
+            if item.role == MessageRole.ASSISTANT
+        ),
+        "",
+    )
+    typer.echo(assistant)
+    typer.echo(f"[status={final_state.status} state_id={final_state.id}]", err=True)
+
+
 @app.command()
 def chat(
     message: Annotated[str, typer.Argument(help="User message for a single turn")],
@@ -97,6 +281,14 @@ def chat(
         bool,
         typer.Option("--demo/--no-demo", help="Run offline with DemoPlanner (no LLM)"),
     ] = False,
+    engine: Annotated[
+        str,
+        typer.Option(
+            "--engine",
+            "-e",
+            help="Execution engine: 'react' (default) or 'workflow'",
+        ),
+    ] = "react",
     api_key: Annotated[
         str | None,
         typer.Option("--api-key", envvar="JARVIS_API_KEY", help="LLM API key"),
@@ -136,45 +328,32 @@ def chat(
     if db_path:
         memory_store = SQLiteMemoryStore(db_path=db_path)
 
+    normalized_engine = engine.strip().lower()
     try:
-        engine = build_engine(
-            demo=demo,
-            api_key=key,
-            base_url=base_url,
-            model=model,
-            memory=memory_store,
-            approval_callback=None,
-        )
-
-        user_msg = Message(role=MessageRole.USER, content=message)
-        resume_state: State | None = None
-        if memory_store and session_id:
-            resume_state = memory_store.load_state(session_id)
-            if resume_state is None:
-                resume_state = State(id=session_id, messages=[])
-
-        final = engine.run(user_msg, resume_state=resume_state)
-
-        if memory_store and session_id:
-            memory_store.save_state(final)
-
-        if final.status.value == "failed":
-            typer.echo(f"Failed: {final.error}", err=True)
-            raise typer.Exit(code=1)
-        if final.status.value == "cancelled":
-            typer.echo("Cancelled", err=True)
-            raise typer.Exit(code=1)
-
-        assistant = next(
-            (
-                item.content
-                for item in reversed(final.messages)
-                if item.role == MessageRole.ASSISTANT
-            ),
-            "",
-        )
-        typer.echo(assistant)
-        typer.echo(f"[status={final.status} state_id={final.id}]", err=True)
+        if normalized_engine == "react":
+            _run_react_chat(
+                message=message,
+                demo=demo,
+                api_key=key,
+                base_url=base_url,
+                model=model,
+                memory_store=memory_store,
+                session_id=session_id,
+            )
+        elif normalized_engine == "workflow":
+            _run_workflow_chat(
+                message=message,
+                demo=demo,
+                api_key=key,
+                base_url=base_url,
+                model=model,
+                memory_store=memory_store,
+                session_id=session_id,
+            )
+        else:
+            raise typer.BadParameter(
+                f"Unknown engine '{engine}'. Supported engines: 'react', 'workflow'"
+            )
     finally:
         if memory_store:
             memory_store.close()
