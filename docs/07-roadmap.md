@@ -232,6 +232,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `workflow/parallel.py`；并行测试 |
 | **Quality Gate** | Parallel Tool 结果可合并；无竞态 |
 
+**状态**：✅ 完成
+
 ---
 
 # V4 Production Agent
@@ -279,8 +281,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V2 | Phase10 Persistence | ✅ 完成 |
 | V3 | Phase11 Workflow Foundation | ✅ 完成 |
 | V3 | Phase12 State Machine Upgrade | ✅ 完成 |
-| V3 | Phase13 Parallel Execution | 🔄 下一 Phase |
-| V4 | Phase14–15 | ⏳ 待开始 |
+| V3 | Phase13 Parallel Execution | ✅ 完成 |
+| V4 | Phase14 MCP Integration | 🔄 下一 Phase |
+| V4 | Phase15 Production Hardening | ⏳ 待开始 |
 
 ---
 

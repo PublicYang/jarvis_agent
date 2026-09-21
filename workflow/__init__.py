@@ -9,10 +9,22 @@ from workflow.engine import (
     WorkflowStepRecord,
 )
 from workflow.node import FunctionNode, NodeExecutionError, WorkflowNode
+from workflow.parallel import (
+    MergeStrategy,
+    ParallelExecutionError,
+    ParallelNode,
+    ParallelToolNode,
+    default_merge_strategy,
+    namespaced_merge_strategy,
+)
 
 __all__ = [
     "FunctionNode",
+    "MergeStrategy",
     "NodeExecutionError",
+    "ParallelExecutionError",
+    "ParallelNode",
+    "ParallelToolNode",
     "WorkflowEdge",
     "WorkflowEngine",
     "WorkflowExecutionError",
@@ -22,4 +34,6 @@ __all__ = [
     "WorkflowStatus",
     "WorkflowStepRecord",
     "WorkflowValidationError",
+    "default_merge_strategy",
+    "namespaced_merge_strategy",
 ]
