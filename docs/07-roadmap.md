@@ -202,6 +202,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `workflow/node.py`、`workflow/edge.py` |
 | **Quality Gate** | 线性 Workflow 可执行；文档同步 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase12 — State Machine Upgrade
@@ -273,8 +275,9 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V2 | Phase8 Memory Foundation | ✅ 完成 |
 | V2 | Phase9 Context Engineering | ✅ 完成 |
 | V2 | Phase10 Persistence | ✅ 完成 |
-| V3 | Phase11 Workflow Foundation | 🔄 下一 Phase |
-| V3 | Phase12–13 | ⏳ 待开始 |
+| V3 | Phase11 Workflow Foundation | ✅ 完成 |
+| V3 | Phase12 State Machine Upgrade | 🔄 下一 Phase |
+| V3 | Phase13 Parallel Execution | ⏳ 待开始 |
 | V4 | Phase14–15 | ⏳ 待开始 |
 
 ---
