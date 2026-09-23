@@ -1,4 +1,4 @@
-﻿"""Workflow execution engine with interrupt, resume, and replay (Phase12)."""
+"""Workflow execution engine with interrupt, resume, and replay (Phase12)."""
 
 from __future__ import annotations
 
@@ -8,7 +8,19 @@ from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
+from infra.telemetry import (
+    bind_context,
+    clear_context,
+    get_logger,
+    get_metrics,
+    get_tracer,
+)
+
 from workflow.edge import WorkflowGraph
+
+_logger = get_logger("workflow.engine")
+_tracer = get_tracer()
+_metrics = get_metrics()
 
 
 class WorkflowStatus(StrEnum):
@@ -83,12 +95,23 @@ class WorkflowEngine:
         )
         self._runs[actual_run_id] = snapshot
 
-        return self._execute_loop(
-            snapshot,
-            interrupt_before=interrupt_before or set(),
-            interrupt_after=interrupt_after or set(),
-            max_steps=max_steps,
-        )
+        bind_context(run_id=actual_run_id, engine="workflow")
+        _logger.info(f"Starting workflow run {actual_run_id}", run_id=actual_run_id)
+        _metrics.increment("engine_runs_total", tags={"engine": "workflow"})
+
+        with _tracer.start_span(
+            "workflow_engine_run",
+            tags={"run_id": actual_run_id, "engine": "workflow"},
+        ):
+            try:
+                return self._execute_loop(
+                    snapshot,
+                    interrupt_before=interrupt_before or set(),
+                    interrupt_after=interrupt_after or set(),
+                    max_steps=max_steps,
+                )
+            finally:
+                clear_context()
 
     def interrupt(self, run_id: str) -> None:
         """Signal an active workflow run to pause at the next checkpoint."""
@@ -203,17 +226,27 @@ class WorkflowEngine:
             node = snapshot.graph.nodes[current_id]
             input_ctx = dict(snapshot.context)
 
-            try:
-                output_ctx = node.execute(input_ctx)
-            except Exception as exc:
-                snapshot.status = WorkflowStatus.FAILED
-                snapshot.error = str(exc)
-                snapshot.context["__status__"] = WorkflowStatus.FAILED.value
-                snapshot.context["__error__"] = str(exc)
-                snapshot.updated_at = datetime.now(UTC).isoformat()
-                raise WorkflowExecutionError(
-                    f"Node '{current_id}' failed: {exc}"
-                ) from exc
+            with _tracer.start_span(
+                "workflow_node_execute",
+                tags={"node_id": current_id, "run_id": snapshot.run_id},
+            ):
+                _metrics.increment(
+                    "workflow_node_executions_total", tags={"node": current_id}
+                )
+                try:
+                    output_ctx = node.execute(input_ctx)
+                except Exception as exc:
+                    snapshot.status = WorkflowStatus.FAILED
+                    _metrics.increment(
+                        "engine_failures_total", tags={"engine": "workflow"}
+                    )
+                    snapshot.error = str(exc)
+                    snapshot.context["__status__"] = WorkflowStatus.FAILED.value
+                    snapshot.context["__error__"] = str(exc)
+                    snapshot.updated_at = datetime.now(UTC).isoformat()
+                    raise WorkflowExecutionError(
+                        f"Node '{current_id}' failed: {exc}"
+                    ) from exc
 
             step_record = WorkflowStepRecord(
                 step_index=len(snapshot.history),
@@ -242,6 +275,7 @@ class WorkflowEngine:
 
         # Workflow reached terminal node
         snapshot.status = WorkflowStatus.COMPLETED
+        _metrics.increment("engine_completions_total", tags={"engine": "workflow"})
         snapshot.context["__status__"] = WorkflowStatus.COMPLETED.value
         snapshot.context.pop("__current_node__", None)
         snapshot.updated_at = datetime.now(UTC).isoformat()

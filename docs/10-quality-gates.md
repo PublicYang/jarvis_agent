@@ -63,10 +63,10 @@
 
 ## V4 Production Agent
 
-| Phase | Gate |
-|-------|------|
-| **Phase14** | MCP 契约测试；Tool Discovery 可测 |
-| **Phase15** | Logging/Tracing/Metrics 关键路径覆盖；Config 可配置 |
+| Phase | Gate | 状态 |
+|-------|------|------|
+| **Phase14** | MCP 契约测试；Tool Discovery 可测 | ✅ 通过 |
+| **Phase15** | Logging/Tracing/Metrics 关键路径覆盖；Config 可配置 | ✅ 通过 |
 
 ---
 

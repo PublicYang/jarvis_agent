@@ -17,7 +17,8 @@ jarvis_agent/
 ├── llm/                     # LLM Adapter
 ├── memory/                  # Memory
 ├── workflow/                # Workflow 引擎
-├── integrations/            # 接入层（CLI/Web/BAG 等）
+├── integrations/            # 接入层（CLI/Web/BAG/MCP 等）
+├── infra/                   # 基础设施（Config、Logging、Tracing、Metrics）
 ├── tests/                   # 测试
 ├── pyproject.toml
 ├── README.md
@@ -38,7 +39,8 @@ jarvis_agent/
 | tools/ | Phase6 | ToolCall、Observation |
 | memory/ | Phase8–10 | Memory、Context、Persistence |
 | workflow/ | Phase11–13 | Node、Edge、Parallel |
-| integrations/ (MCP) | Phase14 | MCP Client 适配 |
+| integrations/mcp/ | Phase14 | MCP Client 适配与工具发现 |
+| infra/ | Phase15 | Config、Logging、Tracing、Metrics |
 | tests/ | Phase2 起 | 全阶段测试 |
 
 ---

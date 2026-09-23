@@ -45,12 +45,13 @@ packages = [
     "memory",
     "workflow",
     "integrations",
+    "infra",
 ]
 
 [tool.ruff]
 target-version = "py312"
 line-length = 88
-src = ["runtime", "planner", "tools", "llm", "memory", "workflow", "integrations", "tests"]
+src = ["runtime", "planner", "tools", "llm", "memory", "workflow", "integrations", "infra", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]

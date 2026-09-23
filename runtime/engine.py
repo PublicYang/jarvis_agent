@@ -9,6 +9,13 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FuturesTimeout
 from datetime import UTC, datetime
 
+from infra.telemetry import (
+    bind_context,
+    clear_context,
+    get_logger,
+    get_metrics,
+    get_tracer,
+)
 from planner.base import DecisionType, Planner, PlannerOutput
 from pydantic import ValidationError
 from tools.base import Observation, ToolCall, ToolCallStatus
@@ -23,6 +30,10 @@ from runtime.state_machine import (
 )
 
 ApprovalCallback = Callable[[ToolCall], bool]
+
+_logger = get_logger("runtime.engine")
+_tracer = get_tracer()
+_metrics = get_metrics()
 
 
 def _utcnow() -> datetime:
@@ -86,13 +97,35 @@ class RuntimeEngine:
             )
         self._active[state.id] = state
         self._phases[state.id] = RuntimePhase.IDLE
+
+        bind_context(run_id=state.id, engine="react")
+        _logger.info(f"Starting ReAct engine run {state.id}", run_id=state.id)
+        _metrics.increment("engine_runs_total", tags={"engine": "react"})
         started = time.monotonic()
-        try:
-            state = self._enter(state, RuntimePhase.PLANNING)
-            return self._run_loop(state, started=started)
-        finally:
-            self._active.pop(state.id, None)
-            self._cancelled.discard(state.id)
+        with _tracer.start_span(
+            "react_engine_run",
+            tags={"run_id": state.id, "engine": "react"},
+        ):
+            try:
+                state = self._enter(state, RuntimePhase.PLANNING)
+                final_state = self._run_loop(state, started=started)
+                duration = time.monotonic() - started
+                _metrics.observe(
+                    "engine_run_duration_seconds", duration, tags={"engine": "react"}
+                )
+                if final_state.status == StateStatus.COMPLETED:
+                    _metrics.increment(
+                        "engine_completions_total", tags={"engine": "react"}
+                    )
+                else:
+                    _metrics.increment(
+                        "engine_failures_total", tags={"engine": "react"}
+                    )
+                return final_state
+            finally:
+                self._active.pop(state.id, None)
+                self._cancelled.discard(state.id)
+                clear_context()
 
     def cancel(self, state_id: str) -> None:
         """Request cancellation; the run loop exits at the next safe checkpoint."""
@@ -252,11 +285,13 @@ class RuntimeEngine:
         return state, True, 0
 
     def _plan_with_timeout(self, state: State) -> PlannerOutput:
-        return self._call_with_timeout(
-            lambda: self._planner.plan(state),
-            timeout=self._llm_timeout,
-            label="planner",
-        )
+        with _tracer.start_span("react_plan_step", tags={"run_id": state.id}):
+            _metrics.increment("planner_steps_total", tags={"engine": "react"})
+            return self._call_with_timeout(
+                lambda: self._planner.plan(state),
+                timeout=self._llm_timeout,
+                label="planner",
+            )
 
     def _execute_tool_with_timeout(
         self, tool_call: ToolCall

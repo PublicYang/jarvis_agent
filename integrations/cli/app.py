@@ -7,6 +7,7 @@ import uuid
 from typing import Annotated, Any
 
 import typer
+from infra.config import get_config
 from llm.openai_compat import OpenAICompatAdapter
 from memory.sqlite import SQLiteMemoryStore
 from memory.store import MemoryStore
@@ -21,6 +22,8 @@ from tools.registry import InMemoryToolRegistry
 from workflow.edge import WorkflowGraph
 from workflow.engine import WorkflowEngine
 from workflow.node import FunctionNode
+
+from integrations.mcp import MCPClient, register_mcp_client
 
 app = typer.Typer(help="Jarvis Agent CLI", no_args_is_help=True)
 
@@ -62,6 +65,18 @@ class DemoPlanner:
         )
 
 
+def setup_tools(
+    mcp_clients: list[MCPClient] | None = None,
+) -> tuple[InMemoryToolRegistry, ToolExecutor]:
+    registry = InMemoryToolRegistry()
+    registry.register(EchoTool())
+    if mcp_clients:
+        for client in mcp_clients:
+            register_mcp_client(registry, client)
+    executor = ToolExecutor(registry)
+    return registry, executor
+
+
 def build_engine(
     *,
     demo: bool = False,
@@ -70,10 +85,9 @@ def build_engine(
     model: str = "gpt-4o-mini",
     memory: MemoryStore | None = None,
     approval_callback=None,
+    mcp_clients: list[MCPClient] | None = None,
 ) -> RuntimeEngine:
-    registry = InMemoryToolRegistry()
-    registry.register(EchoTool())
-    executor = ToolExecutor(registry)
+    _registry, executor = setup_tools(mcp_clients=mcp_clients)
 
     if demo:
         planner = DemoPlanner()
@@ -167,6 +181,7 @@ def _run_react_chat(
     model: str,
     memory_store: SQLiteMemoryStore | None,
     session_id: str | None,
+    mcp_clients: list[MCPClient] | None = None,
 ) -> None:
     """Execute chat turn using RuntimeEngine (ReAct loop)."""
     engine = build_engine(
@@ -176,6 +191,7 @@ def _run_react_chat(
         model=model,
         memory=memory_store,
         approval_callback=None,
+        mcp_clients=mcp_clients,
     )
 
     user_msg = Message(role=MessageRole.USER, content=message)
@@ -218,11 +234,10 @@ def _run_workflow_chat(
     model: str,
     memory_store: SQLiteMemoryStore | None,
     session_id: str | None,
+    mcp_clients: list[MCPClient] | None = None,
 ) -> None:
     """Execute chat turn using WorkflowGraph & WorkflowEngine."""
-    registry = InMemoryToolRegistry()
-    registry.register(EchoTool())
-    executor = ToolExecutor(registry)
+    _registry, executor = setup_tools(mcp_clients=mcp_clients)
 
     if demo:
         planner = DemoPlanner()
@@ -321,31 +336,43 @@ def chat(
         ),
     ] = None,
 ) -> None:
-    """Run one Agent turn and print the assistant reply."""
-    key = api_key or os.getenv("JARVIS_API_KEY")
-    memory_store: SQLiteMemoryStore | None = None
-    if db_path:
-        memory_store = SQLiteMemoryStore(db_path=db_path)
+    cfg = get_config()
+    key = api_key or cfg.llm_api_key or os.getenv("JARVIS_API_KEY")
+    resolved_base_url = (
+        base_url
+        if base_url != "https://api.openai.com/v1"
+        else (cfg.llm_base_url or base_url)
+    )
+    resolved_model = model if model != "gpt-4o-mini" else (cfg.llm_model or model)
+    resolved_db_path = db_path or cfg.storage_db_path
+    resolved_engine = (
+        (engine if engine != "react" else (cfg.runtime_engine or "react"))
+        .strip()
+        .lower()
+    )
 
-    normalized_engine = engine.strip().lower()
+    memory_store: SQLiteMemoryStore | None = None
+    if resolved_db_path:
+        memory_store = SQLiteMemoryStore(db_path=resolved_db_path)
+
     try:
-        if normalized_engine == "react":
+        if resolved_engine == "react":
             _run_react_chat(
                 message=message,
                 demo=demo,
                 api_key=key,
-                base_url=base_url,
-                model=model,
+                base_url=resolved_base_url,
+                model=resolved_model,
                 memory_store=memory_store,
                 session_id=session_id,
             )
-        elif normalized_engine == "workflow":
+        elif resolved_engine == "workflow":
             _run_workflow_chat(
                 message=message,
                 demo=demo,
                 api_key=key,
-                base_url=base_url,
-                model=model,
+                base_url=resolved_base_url,
+                model=resolved_model,
                 memory_store=memory_store,
                 session_id=session_id,
             )

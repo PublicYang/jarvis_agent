@@ -249,6 +249,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Expected Git Diff** | `integrations/mcp/`；MCP 契约测试 |
 | **Quality Gate** | MCP 接口稳定；Tool Discovery 可测 |
 
+**状态**：✅ 完成
+
 ---
 
 ## Phase15 — Production Hardening
@@ -261,6 +263,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | **Architecture Changes** | Infrastructure 完善 |
 | **Expected Git Diff** | `jarvis/config.py`；logging/tracing 中间件 |
 | **Quality Gate** | 关键路径有 Trace；Config 可环境变量覆盖 |
+
+**状态**：✅ 完成
 
 ---
 
@@ -282,8 +286,8 @@ Phase3  Runtime Data   Phase7  Runtime Loop
 | V3 | Phase11 Workflow Foundation | ✅ 完成 |
 | V3 | Phase12 State Machine Upgrade | ✅ 完成 |
 | V3 | Phase13 Parallel Execution | ✅ 完成 |
-| V4 | Phase14 MCP Integration | 🔄 下一 Phase |
-| V4 | Phase15 Production Hardening | ⏳ 待开始 |
+| V4 | Phase14 MCP Integration | ✅ 完成 |
+| V4 | Phase15 Production Hardening | ✅ 完成 |
 
 ---
 
