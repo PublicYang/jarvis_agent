@@ -128,7 +128,6 @@ def build_chat_workflow_graph(
             return context
 
         _finished_call, obs = executor.execute(tool_call)
-        new_obs = [*state.observations, obs]
         tool_msg = Message(
             role=MessageRole.TOOL,
             content=str(obs.content),
@@ -137,7 +136,7 @@ def build_chat_workflow_graph(
         )
         context["state"] = state.model_copy(
             update={
-                "observations": new_obs,
+                "observations": [*state.observations, obs],
                 "messages": [*state.messages, tool_msg],
             }
         )
